@@ -1,0 +1,13 @@
+# Reference upload recovery — 4.6.4
+
+The reported Story run received HTTP 200 with a `maseQ` RPC `INVALID_ARGUMENT` response while uploading `download.jpg`. No reference media ID was confirmed. The user reports that manual upload succeeds. The server response does not identify which request field it rejected, so the exact live cause remains unconfirmed.
+
+The extension's existing upload path re-encodes every reference as a padded JPEG. A definite `INVALID_ARGUMENT` now permits one compatibility attempt using the original JPEG, PNG or WebP bytes instead, with MIME type detected from the bytes and fresh request/client IDs and upload security context. Normal successful uploads keep their existing behavior. Both attempts share the per-project source cache; only a confirmed media/asset mapping is considered ready, and failed entries are evicted. Stop, auth/policy failures and uncertain submissions do not trigger this fallback.
+
+Two related bugs were corrected: a matching project URL no longer skips waiting for a still-loading tab, and terminal shared-reference failures pause the Story collection before subsequent chapters repeat the same rejected uploads. Resume retains the saved storyboard and completed panels. A disconnected or empty upload acknowledgement now stops automatic replay rather than repeatedly creating potentially duplicate assets without a confirmed response.
+
+Upload diagnostics include the preparation mode, MIME type and byte count, without image bytes or security tokens. After reloading, the popup shows **v4.6.4**. Resume retries unfinished work using the saved story settings. A saved plan is not automatically rewritten by the earlier narration update; the supplied log also has Story lettering OFF.
+
+Validation: **107 automated checks passed**, covering upload recovery, fresh IDs/security context, concurrent cache reuse, terminal failure, Stop, project readiness, Story pause/resume, backend generation, reference pairing and existing Classic/Story behavior. Real headless Chrome decoded JPEG/PNG/WebP references and verified that fallback bytes and dimensions remain identical, including detection of a mislabeled PNG; corrupt input was rejected. JavaScript syntax and manifest/header consistency were checked. Google responses in these checks were fixtures. No live signed-in upload or Telegram delivery was performed, and acceptance of the user's failing file is not yet verified.
+
+Runtime changes: `background.js`, `flow-rpc.js`, `story-jobs.js`, `manifest.json`, `popup.html`. Regression checks: `flow-upload-recovery.test.cjs`, `story-jobs.test.cjs`. Backup: `tmp/before-upload-original-fallback/`.

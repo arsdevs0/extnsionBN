@@ -1,0 +1,20 @@
+/* Scoped to the new tab; existing tab sizes and section styles stay intact. */
+#modeDirectImage { grid-column:1 / -1; flex-direction:row; align-items:center; justify-content:space-between; gap:10px; }
+#modeDirectImage small { font-size:8px; }
+.direct-image-studio .direct-image-options { display:grid; grid-template-columns:1fr; gap:10px; }
+.direct-image-options label,.direct-image-label { display:block; color:#d9dee7; font-size:11px; font-weight:650; }
+.direct-image-options select,.direct-image-studio textarea { width:100%; min-width:0; margin-top:6px; padding:10px; border:1px solid var(--line); border-radius:9px; background:#090b0e; color:var(--text); font-size:12px; }
+.direct-image-studio textarea { min-height:144px; resize:vertical; line-height:1.6; }
+.direct-image-studio :is(select,textarea,button):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.direct-image-studio .direct-image-label { margin-top:14px; }
+.direct-image-hint { margin:8px 0 12px; color:var(--muted); font-size:10px; line-height:1.6; }
+.direct-image-drop { display:grid; place-items:center; width:100%; min-height:150px; margin-top:7px; padding:12px; border:1px dashed var(--line-bright); border-radius:11px; background:#0c0f13; color:var(--text); }
+.direct-image-drop:hover,.direct-image-drop.dragover { border-color:var(--accent); background:rgba(250,204,21,.04); }
+.direct-image-drop b,.direct-image-drop small { display:block; }
+.direct-image-drop small { margin-top:6px; color:var(--muted); font-size:10px; }
+.direct-image-drop img { display:block; max-width:100%; max-height:220px; object-fit:contain; border-radius:6px; }
+.direct-image-file-row { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px; }
+.direct-image-file-row small { overflow-wrap:anywhere; min-width:0; color:var(--muted); font-size:10px; }
+.direct-image-status { margin:8px 0 0; color:var(--danger); font-size:11px; }
+.direct-image-status:empty { display:none; }
+@media(max-width:370px) { .direct-image-studio .direct-image-options { grid-template-columns:1fr; } #modeDirectImage { flex-direction:column; align-items:flex-start; gap:2px; } }

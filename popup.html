@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guc guy</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="direct-image.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <img class="brand-logo" src="icon128.png" alt="Guc guy logo">
+        <div class="brand-copy"><h1>Guc<span> guy</span></h1><p>Identity-first AI image studio</p></div>
+      <span class="version">v4.6.33</span>
+      </header>
+
+      <section id="flowCard" class="flow-card checking" aria-live="polite">
+        <span class="flow-orbit"><i id="flowDot"></i></span>
+        <div class="flow-copy"><strong id="flowTitle">Guc guy account</strong><p id="flowStatus">Checking your Google sign-in…</p><small id="flowHint">No Flow project tab is required</small></div>
+        <div class="flow-actions"><button id="connectFlowAccount" class="account-button primary" type="button">Sign up / Log in with Google</button></div>
+      </section>
+
+      <details class="mobile-remote">
+        <summary>📱 Phone remote <small>same Wi‑Fi · local only</small></summary>
+        <p id="remoteHint">Run start-mobile-remote.bat once from the Guc guy folder, then create a QR. Keep the QR private; it grants control on this trusted Wi‑Fi.</p>
+        <button id="pairPhone" type="button">Create phone QR</button>
+        <div id="remotePairResult" hidden>
+          <img id="phoneQr" alt="QR code for pairing a phone with Guc guy">
+          <small id="phoneAddress"></small>
+        </div>
+      </details>
+
+      <nav class="mode-switch" aria-label="Creation mode">
+        <button id="modeClassic" class="mode-option active" type="button" data-mode="classic"><b>Guc guy Classic</b><small>Natural phone portraits</small></button>
+        <button id="modeSubjectFlow" class="mode-option" type="button" data-mode="subject-flow"><b>✦ Subject Flow</b><small>Gem-style custom workflow</small></button>
+        <button id="modeStory" class="mode-option" type="button" data-mode="story"><b>▣ Story Studio</b><small>Gemini story + film keyframes</small></button>
+        <button id="modeQid" class="mode-option" type="button" data-mode="qid"><b>▶ Qid</b><small>Video prompt studio</small></button>
+        <button id="modeDirectImage" class="mode-option" type="button" data-mode="direct-image"><b>✦ Direct Image</b><small>Your prompt · Text to Image / Image to Image</small></button>
+      </nav>
+
+      <section id="directImageStudio" class="section-block workflow-panel direct-image-studio" hidden>
+        <div class="section-title"><span>Direct Image</span><small>Your idea, your style</small></div>
+        <div class="direct-image-options">
+          <label for="directImageMode">Create with<select id="directImageMode"><option value="text-to-image">Text to Image</option><option value="image-to-image">Image to Image</option></select></label>
+          <label for="directImageStyle">Style<select id="directImageStyle"></select></label>
+        </div>
+        <p id="directImageStyleHint" class="direct-image-hint"></p>
+        <div id="directImageUpload" hidden>
+          <label class="direct-image-label" for="directImageFile">Source image</label>
+          <button id="directImageDropZone" class="direct-image-drop" type="button" aria-label="Upload or replace source image">
+            <span id="directImageUploadCopy"><b>＋ Add your image</b><small>Drop here or click to choose</small></span>
+            <img id="directImagePreview" alt="Source image preview" hidden>
+          </button>
+          <input id="directImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
+          <div class="direct-image-file-row"><small id="directImageFileName"></small><button id="directImageRemove" class="remove-button" type="button" hidden>Remove</button></div>
+        </div>
+        <label class="direct-image-label" for="directImagePrompt">Your prompt</label>
+        <textarea id="directImagePrompt" rows="6" maxlength="6000" placeholder="Describe your image, or the changes you want…"></textarea>
+        <p id="directImagePromptHint" class="direct-image-hint"></p>
+        <p id="directImageStatus" class="direct-image-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="qidStudio" class="section-block workflow-panel qid-studio" hidden>
+        <div class="section-title"><span>Qid · Video Studio</span><small>Build a Flow-ready video prompt</small></div>
+        <p class="story-tools-note">Add your own subject, outfit and optional starting-frame images. They are uploaded to the new Flow project and attached after their IDs are checked.</p>
+        <label for="qidPrompt">Video scene / action</label>
+        <textarea id="qidPrompt" maxlength="1800" rows="4" placeholder="Describe the scene and action you want…"></textarea>
+        <div class="qid-grid">
+          <label class="character-field">Video model<select id="qidModel"><option value="omni-1-2">Omni 1.2</option><option value="omni-flash">Gemini Omni Flash</option><option value="veo-31-fast">Veo 3.1 Fast</option><option value="veo-31-quality">Veo 3.1 Quality</option><option value="flow-auto">Use Flow's current video model</option></select></label>
+          <label class="character-field">Frame<select id="qidAspect"><option value="VIDEO_ASPECT_RATIO_PORTRAIT">9:16 · portrait</option><option value="VIDEO_ASPECT_RATIO_LANDSCAPE">16:9 · landscape</option></select></label>
+          <label class="character-field">Face<select id="qidFace"><option value="hidden">Keep face hidden</option><option value="visible">Face visible</option></select></label>
+          <label class="character-field">Motion<select id="qidMotion"><option value="mirror">Mirror outfit showcase</option><option value="turn">Slow turn and side profile</option><option value="hair">Hair adjustment and gentle pose</option><option value="window">Window / balcony pose</option><option value="seated">Seated pose with subtle movement</option><option value="entrance">Doorway entrance and camera turn</option><option value="custom">Use scene description only</option></select></label>
+        </div>
+        <div class="qid-grid qid-refs">
+          <div class="character-field qid-ref-field"><span class="qid-ref-title">Subject reference <small>Optional · image</small></span><button id="qidSubjectDrop" class="qid-image-drop" type="button" aria-label="Drop or choose subject image"><span class="qid-drop-copy"><b>Drop image</b><small>or click to choose</small></span><img hidden alt="Subject reference preview"></button><input id="qidSubject" type="file" accept="image/*" hidden><button id="qidSubjectClear" class="qid-clear" type="button" hidden>Remove image</button></div>
+          <div class="character-field qid-ref-field"><span class="qid-ref-title">Outfit reference <small>Optional · image</small></span><button id="qidOutfitDrop" class="qid-image-drop" type="button" aria-label="Drop or choose outfit image"><span class="qid-drop-copy"><b>Drop image</b><small>or click to choose</small></span><img hidden alt="Outfit reference preview"></button><input id="qidOutfit" type="file" accept="image/*" hidden><button id="qidOutfitClear" class="qid-clear" type="button" hidden>Remove image</button></div>
+          <div class="character-field qid-ref-field"><span class="qid-ref-title">Starting frame <small>Optional · image</small></span><button id="qidStartFrameDrop" class="qid-image-drop" type="button" aria-label="Drop or choose starting frame image"><span class="qid-drop-copy"><b>Drop image</b><small>or click to choose</small></span><img hidden alt="Starting frame preview"></button><input id="qidStartFrame" type="file" accept="image/*" hidden><button id="qidStartFrameClear" class="qid-clear" type="button" hidden>Remove image</button></div>
+        </div>
+
+        <details id="qidPoseSection" class="pose-reference-card" data-pose-mode="qid">
+          <summary><span>Pose / Camera Reference</span><small id="qidPoseStatus">Optional</small></summary>
+          <div class="pose-reference-body">
+            <label id="qidPoseDropZone" class="pose-drop-zone" for="qidPoseFile">
+              <input id="qidPoseFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+              <span class="pose-upload-icon" aria-hidden="true">+</span>
+              <img id="qidPosePreview" class="pose-preview" alt="Pose and camera reference" hidden>
+              <span class="pose-upload-copy"><b>Add or replace image</b><small>Drop image or click to choose</small></span>
+            </label>
+            <div class="pose-reference-actions"><span id="qidPoseName" class="pose-reference-name"></span><button id="qidPoseRemove" class="pose-remove" type="button" hidden>Remove</button></div>
+            <p class="pose-reference-hint">Opening pose + fixed camera. Maximum 3 video references. Identity and outfit stay separate.</p>
+          </div>
+        </details>
+        <label class="qid-check"><input id="qidDesiStyle" type="checkbox" checked> Desi-inspired styling (adapted to the outfit reference, if supplied)</label>
+        <div class="qid-actions"><button id="qidBuildPrompt" class="account-button" type="button">Build prompt</button><button id="qidGenerate" class="account-button primary" type="button">Generate video</button></div>
+        <p id="qidStatus" class="story-tools-note" aria-live="polite">Qid uses the selected subject and outfit as Flow references. The chosen model must be available on your Flow account.</p>
+        <textarea id="qidOutputPrompt" rows="7" readonly aria-label="Generated Qid video prompt" placeholder="Your prepared prompt will appear here…"></textarea>
+      </section>
+
+      <section id="classicReferences" class="section-block workflow-panel">
+        <div class="section-title"><span>References</span><small>Keep the same person across every image</small></div>
+
+        <article class="reference-card subject-card">
+          <div class="reference-heading"><span class="step">01</span><div><strong>Subject / Identity</strong><small>Multiple images allowed</small></div><span id="subjectCount" class="count-pill">0</span></div>
+          <label id="subjectDropZone" class="drop-zone wide" for="subjectFiles">
+            <input id="subjectFiles" type="file" accept="image/*" multiple>
+            <span class="upload-icon">+</span><span><b>Add subject photos</b><small>Use face angles plus one clear full-body photo</small></span>
+          </label>
+          <div id="subjectGallery" class="reference-gallery"></div>
+        </article>
+
+        <div class="reference-row">
+          <article class="reference-card">
+            <div class="reference-heading"><span class="step">02</span><div><strong>Outfit</strong><small>Clothing only</small></div></div>
+            <label id="outfitDropZone" class="drop-zone" for="outfitFile">
+              <input id="outfitFile" type="file" accept="image/*">
+              <img id="outfitPreview" class="reference-preview" alt="Outfit reference" hidden>
+              <span class="upload-copy"><b>Add outfit</b><small>Required</small></span>
+            </label>
+            <button id="removeOutfit" class="remove-button" type="button" hidden>Remove outfit</button>
+          </article>
+
+          <article class="reference-card optional-card">
+            <div class="reference-heading"><span class="step">03</span><div><strong>Location</strong><small>Optional</small></div></div>
+            <label id="locationDropZone" class="drop-zone" for="locationFile">
+              <input id="locationFile" type="file" accept="image/*">
+              <img id="locationPreview" class="reference-preview" alt="Location reference" hidden>
+              <span class="upload-copy"><b>Add location</b><small>Optional · simple real places</small></span>
+            </label>
+            <button id="removeLocation" class="remove-button" type="button" hidden>Remove location</button>
+          </article>
+        </div>
+
+        <article id="figureReferenceSection" class="reference-card figure-reference-card">
+          <div class="reference-heading"><span class="step">04</span><div><strong>Figure Reference</strong><small>Shared across modes · highest body priority</small></div><span id="figureReferenceStatus" class="count-pill">Optional</span></div>
+          <label id="figureReferenceDropZone" class="drop-zone wide" for="figureReferenceFile">
+            <input id="figureReferenceFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+            <img id="figureReferencePreview" class="reference-preview" alt="Figure reference preview" hidden>
+            <span class="upload-copy"><b>Add figure image</b><small>Body shape only · face and outfit stay separate</small></span>
+          </label>
+          <div class="figure-reference-actions"><small id="figureReferenceName"></small><button id="figureReferenceRemove" class="remove-button" type="button" hidden>Remove figure</button></div>
+          <label id="storyFigureTargetRow" for="storyFigureTarget" hidden>Apply to character<select id="storyFigureTarget"></select></label>
+          <p class="figure-reference-hint">Matches the body in this image before written figure/tuning. Automatically attached and mentioned as @figure. Remove it to use written details.</p>
+        </article>
+        <details id="classicPoseSection" class="pose-reference-card" data-pose-mode="classic">
+          <summary><span>Pose / Camera Reference</span><small id="classicPoseStatus">Optional</small></summary>
+          <div class="pose-reference-body">
+            <label id="classicPoseDropZone" class="pose-drop-zone" for="classicPoseFile">
+              <input id="classicPoseFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+              <span class="pose-upload-icon" aria-hidden="true">+</span>
+              <img id="classicPosePreview" class="pose-preview" alt="Pose and camera reference" hidden>
+              <span class="pose-upload-copy"><b>Add or replace image</b><small>Drop image or click to choose</small></span>
+            </label>
+            <div class="pose-reference-actions"><span id="classicPoseName" class="pose-reference-name"></span><button id="classicPoseRemove" class="pose-remove" type="button" hidden>Remove</button></div>
+            <p class="pose-reference-hint">Same pose, angle and crop across the batch. Identity and outfit stay separate.</p>
+          </div>
+        </details>
+      </section>
+
+      <section id="classicPrompts" class="section-block prompt-section workflow-panel">
+        <label for="shortPrompt">Your scene</label>
+        <input id="shortPrompt" type="text" maxlength="300" autocomplete="off" placeholder="e.g. A casual photo by a plain wall, in a lift or a garden">
+
+        <details class="physical-details">
+          <summary><span>Physical details / Figure lock</span><small>Optional · strictly followed</small></summary>
+          <div class="physical-details-body">
+            <label for="physicalDetails">Describe only stable physical traits</label>
+            <textarea id="physicalDetails" maxlength="1200" rows="4" placeholder="e.g. 5'6, thick hourglass, full thighs, soft abdomen; your chest, waist and hip measurements…"></textarea>
+            <p>Your figure controls body size even when identity, outfit or pose references are slimmer. Describe overall build as well as any measurements. Body Tuning wins for the same trait; with no figure entered, Classic uses a thick hourglass default without invented measurements.</p>
+          </div>
+        </details>
+
+        <div class="engine-switch" role="group" aria-label="Prompt engine">
+          <button id="engineGemini" class="engine-option active" type="button" data-engine="gemini"><b>✦ Gemini Auto</b><small>Creates unique prompt variations</small></button>
+          <button id="engineDirect" class="engine-option" type="button" data-engine="direct"><b>Direct Prompt</b><small>Uses your exact prompt</small></button>
+        </div>
+      </section>
+
+      <section id="subjectFlowReferences" class="section-block workflow-panel" hidden>
+        <div class="subject-flow-hero">
+          <span>SUBJECT FLOW</span>
+          <strong>Build your own visual Gemini Gem</strong>
+          <p>Identity, wardrobe, environment and aesthetic references stay in their own lanes.</p>
+        </div>
+
+        <article class="reference-card subject-card">
+          <div class="reference-heading"><span class="step">01</span><div><strong>Subject Identity</strong><small>Face angles + one full-body photo work best</small></div><span id="sfSubjectCount" class="count-pill">0</span></div>
+          <label id="sfSubjectDropZone" class="drop-zone wide" for="sfSubjectFiles">
+            <input id="sfSubjectFiles" type="file" accept="image/*" multiple>
+            <span class="upload-icon">+</span><span><b>📸 Subject References</b><small>Drag & Drop or click to upload</small></span>
+          </label>
+          <div id="sfSubjectGallery" class="file-gallery"></div>
+        </article>
+
+        <article class="reference-card flow-reference-group">
+          <div class="reference-heading"><span class="step">02</span><div><strong>Outfit Images</strong><small>Exact clothing, fabric and accessories</small></div><span id="sfOutfitCount" class="count-pill">0</span></div>
+          <label id="sfOutfitDropZone" class="drop-zone wide" for="sfOutfitFiles">
+            <input id="sfOutfitFiles" type="file" accept="image/*" multiple>
+            <span class="upload-icon">+</span><span><b>Add outfit images</b><small>Drag & Drop or click to upload outfits</small></span>
+          </label>
+          <div id="sfOutfitGallery" class="file-gallery"></div>
+        </article>
+
+        <article class="reference-card flow-reference-group">
+          <div class="reference-heading"><span class="step">03</span><div><strong>Knowledge / Environment Images</strong><small>Locations, objects and visual context</small></div><span id="sfKnowledgeCount" class="count-pill">0</span></div>
+          <label id="sfKnowledgeDropZone" class="drop-zone wide" for="sfKnowledgeFiles">
+            <input id="sfKnowledgeFiles" type="file" accept="image/*" multiple>
+            <span class="upload-icon">+</span><span><b>Add knowledge images</b><small>Teach the workflow what the scene should contain</small></span>
+          </label>
+          <div id="sfKnowledgeGallery" class="file-gallery"></div>
+        </article>
+
+        <article class="reference-card flow-reference-group optional-card">
+          <div class="reference-heading"><span class="step">04</span><div><strong>Quality / Aesthetic Images</strong><small>Optional · style and finish only</small></div><span id="sfQualityCount" class="count-pill">0</span></div>
+          <label id="sfQualityDropZone" class="drop-zone wide" for="sfQualityFiles">
+            <input id="sfQualityFiles" type="file" accept="image/*" multiple>
+            <span class="upload-icon">+</span><span><b>Add quality references</b><small>Lighting, texture, camera feel and color treatment</small></span>
+          </label>
+          <div id="sfQualityGallery" class="file-gallery"></div>
+        </article>
+
+        <details id="sfPoseSection" class="pose-reference-card" data-pose-mode="subject-flow">
+          <summary><span>Pose / Camera Reference</span><small id="sfPoseStatus">Optional</small></summary>
+          <div class="pose-reference-body">
+            <label id="sfPoseDropZone" class="pose-drop-zone" for="sfPoseFile">
+              <input id="sfPoseFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+              <span class="pose-upload-icon" aria-hidden="true">+</span>
+              <img id="sfPosePreview" class="pose-preview" alt="Pose and camera reference" hidden>
+              <span class="pose-upload-copy"><b>Add or replace image</b><small>Drop image or click to choose</small></span>
+            </label>
+            <div class="pose-reference-actions"><span id="sfPoseName" class="pose-reference-name"></span><button id="sfPoseRemove" class="pose-remove" type="button" hidden>Remove</button></div>
+            <p class="pose-reference-hint">Same pose, angle and crop across the batch. Identity and outfit stay separate.</p>
+          </div>
+        </details>
+      </section>
+
+      <section id="subjectFlowPrompts" class="section-block subject-flow-prompts workflow-panel" hidden>
+        <div class="section-title"><span>✍️ Prompts</span><small>Saved automatically</small></div>
+        <label for="sfSystemPrompt">System Instruction <em>Base Prompt</em></label>
+        <textarea id="sfSystemPrompt" maxlength="5000" rows="6" placeholder="Define the permanent rules, identity behavior, composition standards, camera style and anything every image must follow."></textarea>
+        <label for="sfFigureDetails">Figure details <em>Optional — overrides conflicting body references</em></label>
+        <textarea id="sfFigureDetails" maxlength="1200" rows="3" placeholder="Your exact physique, proportions and height. Leave blank to use details already written in your base/target prompt."></textarea>
+        <label for="sfTargetPrompt">Target Image Prompt <em>Gemini creates variations of this</em></label>
+        <textarea id="sfTargetPrompt" maxlength="2500" rows="4" placeholder="Describe the image or scene you want to create right now."></textarea>
+        <div class="sf-preset-tools" aria-label="Subject Flow prompt presets">
+          <div class="sf-preset-save"><input id="sfPresetName" type="text" maxlength="48" placeholder="Preset name"><button id="saveSfPreset" type="button">Save preset</button></div>
+          <div class="sf-preset-load"><select id="sfPresetSelect" aria-label="Saved Subject Flow presets"><option value="">No saved presets</option></select><button id="loadSfPreset" type="button" disabled>Load</button><button id="deleteSfPreset" type="button" disabled>Delete</button></div>
+          <div class="sf-preset-files"><button id="exportSfPreset" type="button" disabled>Export selected</button><button id="uploadSfPreset" type="button">Upload preset</button><input id="sfPresetFile" type="file" accept="application/json,.json" hidden></div>
+          <small>Full setup: prompts, figure, image settings and all reference groups, including optional pose/camera images. Upload/export presets as JSON files.</small>
+        </div>
+        <div class="gem-note"><b>Gem-style behavior</b><span>The base instruction governs every result; uploaded references provide visual knowledge without mixing identities, outfits or environments.</span></div>
+        <div class="engine-switch" role="group" aria-label="Subject Flow prompt engine">
+          <button id="sfEngineGemini" class="engine-option active" type="button" data-engine="gemini"><b>✦ Gemini Auto</b><small>Creates faithful prompt variations</small></button>
+          <button id="sfEngineDirect" class="engine-option" type="button" data-engine="direct"><b>No Gemini · Direct</b><small>Uses your target prompt exactly</small></button>
+        </div>
+      </section>
+
+      <section id="storyStudio" class="section-block workflow-panel story-studio" hidden>
+        <section class="story-library" aria-label="Character library">
+          <div class="story-tools-head"><div><small>CHARACTER LIBRARY</small><strong>Your cast. One consistent design.</strong></div><button id="newLibraryCharacter" type="button">+ New</button></div>
+          <div class="story-library-filters"><select id="storyLibrarySeries" aria-label="Character collection"><option value="current">Choose a cast collection…</option><option value="shadow">Shadow Slave · load full cast</option><option value="custom">My saved characters</option></select><input id="storyLibrarySearch" type="search" placeholder="Search name or alias…" aria-label="Search characters"></div>
+          <div id="storyLibraryList" class="story-library-list"></div>
+          <p id="storyLibraryNotice" class="story-tools-note" aria-live="polite">Select Shadow Slave to add the full cast automatically. Your current cast is saved separately before switching. Alternate looks remain selectable.</p>
+        </section>
+        <div class="story-hero">
+          <span>STORY STUDIO · CINEMATIC KEYFRAMES</span>
+          <strong>Build a story, shot by shot.</strong>
+          <p>Plan a connected short film with consistent cast, wardrobe, locations and 16:9 cinematic stills ready for image-to-video.</p>
+        </div>
+
+        <div class="story-source-switch" role="tablist" aria-label="Story source">
+          <button id="storySourceBrief" class="active" type="button" role="tab" aria-selected="true">Story brief</button>
+          <button id="storySourceNovel" type="button" role="tab" aria-selected="false">Novel chapter</button>
+        </div>
+        <label class="story-field" for="storyBrief"><span id="storySourceLabel">Story / scene feed</span><small id="storySourceMeta">Use @ to tag characters</small></label>
+        <div class="story-composer"><textarea id="storyBrief" maxlength="30000" rows="8" placeholder="e.g. @Ayesha reaches the old station at dusk. @Ravi is waiting with a letter that changes everything…"></textarea><div id="storyMentionMenu" class="mention-menu" role="listbox" hidden></div></div>
+        <p id="storySourceHint" class="story-hint">Gemini expands your brief into an ordered cinematic chapter and storyboard.</p>
+
+        <section class="story-chapter-queue" aria-label="Extra chapter queue">
+          <div class="story-tools-head"><div><strong>Chapter queue</strong><small>Current chapter + up to 3 extra · one PDF</small></div><button id="addQueuedChapter" type="button">+ Chapter</button></div>
+          <div id="storyQueueDrafts"></div>
+          <button id="appendQueuedChapters" type="button" hidden>Add drafts to running story</button>
+          <p class="story-tools-note">Chapters run in order. Parallel mode allows up to 2 Flow requests in flight with rate-limited starts. Progress is saved after each panel.</p>
+        </section>
+
+        <div class="story-section-head">
+          <div><strong>Characters</strong><small>Add as many as your story needs · up to four cast members per panel for reference accuracy · physique notes optional</small></div>
+          <button id="addStoryCharacter" type="button">+ Add character</button>
+        </div>
+        <div id="storyFigureReferenceSlot"></div>
+        <div id="storyCharacters" class="story-character-list"></div>
+
+        <div class="story-options">
+          <label class="story-bg-label"><span>Cinematic tone</span><select id="storyBgStyle"><option value="crime-noir" selected>Brooding crime drama</option><option value="photorealistic">Natural photorealism</option><option value="grounded-thriller">Grounded thriller</option><option value="warm-drama">Warm character drama</option><option value="webtoon">Webtoon illustration</option></select></label>
+          <div><strong>Film pacing</strong><small>Establishing shot → action → reaction → payoff</small></div>
+          <label class="story-text-toggle"><input id="storyTextOverlays" type="checkbox"><span><strong>Consistent narration &amp; speech bubbles</strong><small>Black narration cards and white speech bubbles inside the image, clear of faces and action. Full artwork to every edge; no added white borders.</small></span></label>
+        </div>
+        <div id="storyStyleReferenceSection" class="story-style-reference" hidden>
+          <div class="story-style-reference-copy"><strong>Webtoon art references · up to 4</strong><small>Your supplied illustrated examples guide Webtoon by default. Add your own samples to choose another look. References guide ink, shading and atmosphere; scenes and cast follow your chapter.</small></div>
+          <label class="story-style-upload"><input id="storyStyleReferenceInput" type="file" accept="image/*" multiple><span>＋ Add style references</span></label>
+          <div id="storyStyleReferenceGallery" class="story-style-reference-gallery"></div>
+        </div>
+
+        <details id="storyPoseSection" class="pose-reference-card" data-pose-mode="story">
+          <summary><span>Pose / Camera Reference</span><small id="storyPoseStatus">Optional</small></summary>
+          <div class="pose-reference-body">
+            <label id="storyPoseDropZone" class="pose-drop-zone" for="storyPoseFile">
+              <input id="storyPoseFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+              <span class="pose-upload-icon" aria-hidden="true">+</span>
+              <img id="storyPosePreview" class="pose-preview" alt="Pose and camera reference" hidden>
+              <span class="pose-upload-copy"><b>Add or replace image</b><small>Drop image or click to choose</small></span>
+            </label>
+            <div class="pose-reference-actions"><span id="storyPoseName" class="pose-reference-name"></span><button id="storyPoseRemove" class="pose-remove" type="button" hidden>Remove</button></div>
+            <p class="pose-reference-hint">For shots with named characters. Identity and outfit stay separate.</p>
+          </div>
+        </details>
+        <div class="gem-note"><b>Story → shot list → keyframes</b><span>Character identity, height, physique and wardrobe stay locked across each ordered landscape image.</span></div>
+        <article id="storyChapterOutput" class="story-chapter-output" hidden>
+          <div class="story-chapter-head"><div><small>GENERATED CHAPTER</small><strong id="storyChapterTitle">Untitled chapter</strong></div><button id="copyStoryChapter" type="button">Copy chapter</button></div>
+          <div id="storyChapterText" class="story-chapter-text"></div>
+          <details class="story-shot-list"><summary>Storyboard shot list <span id="storyShotCount">0 shots</span></summary><div id="storyShots"></div></details>
+        </article>
+      </section>
+
+      
+            <section id="bodyTuningSection" class="section-block body-tuning-section">
+        <div class="section-title"><span id="bodyTuningTitle">Body Tuning (Highest Written Priority)</span></div>
+        <div class="settings-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+          <label><span>Height</span><input type="text" id="tuneHeight" placeholder="e.g. 5'5 or Short"></label>
+          <label><span>Weight</span><input type="text" id="tuneWeight" placeholder="e.g. 85kg or Heavy"></label>
+          <label><span>Bust / Chest</span><input type="text" id="tuneBust" placeholder="e.g. 56-inch or Huge"></label>
+          <label><span>Waist</span><input type="text" id="tuneWaist" placeholder="e.g. Soft, 36-inch, Narrow"></label>
+          <label><span>Hips & Thighs</span><input type="text" id="tuneHips" placeholder="e.g. 56-inch, Wide"></label>
+          <label><span>Belly / Navel</span><input type="text" id="tuneNavel" placeholder="e.g. Chubby, exposed navel"></label>
+        </div>
+      </section>
+
+<section id="generationSettings" class="section-block settings-section">
+
+        <div class="section-title"><span>Generation</span><div class="quality-badges"><small id="qualityBadge" class="phone-badge">◉ High-detail phone look</small><small id="generationModeBadge" class="parallel-badge">⚡ Parallel</small></div></div>
+        <div class="settings-grid">
+          <label><span>Image model</span><select id="imageModel"><option value="GEM_PIX_2">Nano Banana Pro</option><option value="NARWHAL">Nano Banana 2.1</option><option value="HARBOR_SEAL">Nano Banana 2 Lite</option></select></label>
+          <label><span>Aspect ratio</span><select id="aspectRatio"><option value="IMAGE_ASPECT_RATIO_PORTRAIT">9:16 Portrait</option><option value="IMAGE_ASPECT_RATIO_PORTRAIT_THREE_FOUR" selected>3:4 Portrait</option><option value="IMAGE_ASPECT_RATIO_SQUARE">1:1 Square</option><option value="IMAGE_ASPECT_RATIO_LANDSCAPE_FOUR_THREE">4:3 Landscape</option><option value="IMAGE_ASPECT_RATIO_LANDSCAPE">16:9 Landscape</option></select></label>
+          <label id="imageCountSetting" class="count-setting"><span>Images at once</span><input id="imageCount" type="number" min="1" max="20" value="5"></label>
+          <label><span>Batch mode</span><select id="generationMode"><option value="parallel">Parallel · up to 2 in flight</option><option value="sequential">Sequential · one at a time</option></select></label>
+          <label><span>Upscale preference</span><select id="upscaleEnabled"><option value="on">2K when available</option><option value="off">Original image</option></select><small>Flow currently saves the returned image resolution; an extra 2K upscale pass is unavailable.</small></label>
+          <div class="delivery-settings" style="grid-column: 1 / -1; background: rgba(0, 136, 204, 0.06); border: 1px solid rgba(0, 136, 204, 0.25); border-radius: 8px; padding: 10px 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin: 0;">
+              <span style="display: flex; flex-direction: column; gap: 2px;">
+                <strong style="font-size: 13px; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                  <span>✈️ Send to Telegram Bot</span>
+                </strong>
+                <small style="color: #94a3b8; font-size: 11px;">Send completed images directly to your chosen Telegram ID</small>
+              </span>
+              <input id="tgEnabled" type="checkbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #0088cc;">
+            </label>
+
+            <div id="tgConfigFields" style="display: none; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <label style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; color: #cbd5e1;">Bot Token <small style="color: #64748b;">(from @BotFather)</small></span>
+                <input id="tgBotToken" type="password" placeholder="e.g. 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ..." style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 6px 8px; color: #f8fafc; font-size: 12px; font-family: monospace;">
+              </label>
+
+              <label style="display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                  <span style="font-size: 11px; color: #cbd5e1;">Target Chat Link or ID</span>
+                  <a id="tgAutoDetectBtn" href="#" style="font-size: 10px; color: #38bdf8; text-decoration: none; cursor: pointer;">⚡ Auto-detect my chat</a>
+                </div>
+                <input id="tgChatId" type="text" placeholder="e.g. https://t.me/username, @channel, or 123456789" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 6px 8px; color: #f8fafc; font-size: 12px; font-family: monospace;">
+                <small style="color: #64748b; font-size: 10px;">Paste your profile link (t.me/name), channel link, @username, or numeric ID.</small>
+              </label>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 11px; color: #94a3b8; margin: 0;">
+                  <input id="tgSendAsDoc" type="checkbox" style="width: 14px; height: 14px; accent-color: #0088cc;">
+                  <span>Send uncompressed (Document)</span>
+                </label>
+                <button id="tgTestBtn" type="button" style="background: #0088cc; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 500; cursor: pointer;">Test Bot</button>
+              </div>
+              <div id="tgStatusText" style="font-size: 11px; color: #94a3b8; display: none;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <button id="generate" class="generate-button" type="button"><span>Generate images</span><i>→</i></button>
+
+      <section class="progress-section" aria-live="polite">
+        <div class="progress-head"><strong id="queueSummary">Ready to create</strong><span id="queueCounts">0 / 5</span></div>
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <section id="storyDelivery" class="story-delivery" hidden aria-live="polite">
+          <div class="story-tools-head"><div><small>STORY COLLECTION</small><strong id="storyDeliveryTitle">Saved chapter progress</strong></div></div>
+          <div class="story-run-controls" role="group" aria-label="Story generation controls">
+            <button id="resumeStory" type="button" title="Continue saved chapters; keep completed panels">Resume</button>
+            <button id="stopStory" type="button" title="Stop new requests and save progress">Stop</button>
+            <button id="startOverStory" type="button" title="Start fresh from the chapter text and settings currently entered above">Start over</button>
+          </div>
+          <p id="storyRunHint" class="story-tools-note">Resume continues the saved story. Start over uses the chapter text, queued chapters, characters and settings currently entered above.</p>
+          <div id="storyChapterProgress"></div>
+          <p id="storyDeliveryStatus" class="story-tools-note"></p>
+          <div class="story-delivery-actions"><button id="retryUnknownStory" type="button" hidden>Retry unconfirmed panels</button><button id="saveStoryPdf" type="button" hidden>↓ Save complete PDF</button><button id="sendStoryPdf" type="button" hidden>Send PDF to Telegram</button><button id="discardStory" type="button">Clear saved queue</button></div>
+          <p class="story-tools-note">PDF saves only when you click Save. Telegram uses your bot settings. Pages break between complete panels; artwork and text stay together.</p>
+        </section>
+        <div id="queueList" class="queue-grid"></div>
+        <button id="stop" class="stop-button" type="button" disabled>Stop generation</button>
+        <section class="log-panel">
+          <div class="log-head"><span><i></i> Live activity logs</span><div class="log-actions"><button id="copyDiagnostics" type="button">Copy diagnostics</button><button id="clearLogs" type="button">Clear</button></div></div>
+          <div id="terminal" class="terminal" role="log" aria-live="polite"><span class="log-empty">Waiting for generation activity…</span></div>
+        </section>
+      </section>
+    </main>
+
+    <div id="imagePreview" class="preview-overlay" hidden>
+      <button id="closePreview" class="preview-close" type="button" aria-label="Close preview">×</button>
+      <img id="previewImage" alt="Generated image preview"><p id="previewCaption"></p>
+    </div>
+    <script src="story-library.js"></script>
+    <script src="story-tools-ui.js"></script>
+    <script src="pose-reference.js"></script>
+    <script src="figure-reference.js"></script>
+    <script src="direct-image.js"></script>
+    <script src="direct-image-ui.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

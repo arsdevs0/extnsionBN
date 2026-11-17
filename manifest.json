@@ -1,0 +1,92 @@
+{
+  "manifest_version": 3,
+  "name": "Guc guy",
+  "version": "4.6.33",
+  "minimum_chrome_version": "116",
+  "description": "Generate identity-consistent AI images and videos with Google Flow.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "downloads",
+    "clipboardWrite",
+    "scripting",
+    "tabs",
+    "offscreen",
+    "sidePanel",
+    "webRequest",
+    "identity",
+    "identity.email"
+  ],
+  "host_permissions": [
+    "https://gemini.google.com/*",
+    "https://flow.google.com/*",
+    "https://flow-content.google/*",
+    "https://flow.google/*",
+    "https://aisandbox-pa.googleapis.com/*",
+    "https://*.googleapis.com/*",
+    "https://*.googleusercontent.com/*",
+    "https://api.telegram.org/*",
+    "http://127.0.0.1:32189/*",
+    "http://localhost:32189/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; media-src 'self' https: data: blob:"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/lettering-thought-reference.jpg",
+        "assets/lettering-narration-dialogue-reference.png",
+        "assets/lettering-speech-reference.png",
+        "assets/subject-flow-reference-review.jpg"
+      ],
+      "matches": [
+        "https://gemini.google.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_title": "Open Flipo"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://gemini.google.com/*"
+      ],
+      "js": [
+        "content_gemini.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://flow.google.com/*"
+      ],
+      "js": [
+        "content_flow_bridge.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://flow.google.com/*"
+      ],
+      "js": [
+        "content_flow_capture.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "icons": {
+    "16": "icon128.png",
+    "48": "icon128.png",
+    "128": "icon128.png"
+  }
+}

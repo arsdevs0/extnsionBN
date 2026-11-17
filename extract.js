@@ -1,0 +1,1 @@
+const fs = require('fs'); const code = fs.readFileSync('d:/pfGG/auto_flow/assets/adapter-LgTzSSDb.js', 'utf8'); const match = code.match(/function vr\([^)]*\)\{[^}]+\}/); console.log(match ? match[0] : 'not found');

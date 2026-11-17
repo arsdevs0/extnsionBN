@@ -1,0 +1,10 @@
+{
+  "name": "flipo-phone-bridge",
+  "version": "4.3.8",
+  "private": true,
+  "scripts": { "mobile-remote": "node server.js" },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "ws": "^8.22.0"
+  }
+}
